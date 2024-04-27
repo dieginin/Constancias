@@ -63,8 +63,7 @@ class Database:
             updates["localidad"] = localidad
 
         self._clientes.update(updates, doc_ids=[uid])
-        cliente = self.obtener_cliente(uid)
-        return f"{cliente.nombre} actualizado"
+        return f"{self.obtener_cliente(uid).nombre} actualizado"
 
     def borrar_cliente(self, uid: int) -> str:
         cliente = self.obtener_cliente(uid)
