@@ -19,9 +19,9 @@ class Database:
         cliente = self._clientes.get(Query().nombre == nombre)
         if cliente:
             return Cliente(
-                cliente["uid"], cliente["nombre"], cliente["estado"], cliente["municipio"], cliente["localidad"] # type: ignore
+                cliente["uid"], cliente["nombre"], cliente["estado"], cliente["municipio"], cliente["localidad"]  # type: ignore
             )
-        return Cliente(0, *4*["None"])
+        return Cliente(0, *4 * ["None"])
 
     def insertar_cliente(
         self, nombre: str, estado: str, municipio: str, localidad: str
