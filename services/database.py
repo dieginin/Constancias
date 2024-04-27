@@ -16,8 +16,8 @@ class Database:
             for c in self._clientes.all()
         ]
 
-    def obtener_cliente(self, nombre: str) -> Cliente:
-        cliente = self._clientes.get(Query().nombre == nombre)
+    def obtener_cliente(self, uid: int) -> Cliente:
+        cliente = self._clientes.get(doc_id=uid)
         if cliente:
             return Cliente(
                 cliente["uid"], cliente["nombre"], cliente["estado"], cliente["municipio"], cliente["localidad"]  # type: ignore
@@ -63,13 +63,13 @@ class Database:
             updates["localidad"] = localidad
 
         self._clientes.update(updates, doc_ids=[uid])
-        cliente = self._clientes.get(doc_id=uid)
-        return f"{cliente["nombre"]} actualizado"  # type: ignore
+        cliente = self.obtener_cliente(uid)
+        return f"{cliente.nombre} actualizado"
 
     def borrar_cliente(self, uid: int) -> str:
-        cliente = self._clientes.get(doc_id=uid)
-        self._clientes.remove(doc_ids=[uid])[0]
-        return f"{cliente["nombre"]} eliminado"  # type: ignore
+        cliente = self.obtener_cliente(uid)
+        self._clientes.remove(doc_ids=[uid])
+        return f"{cliente.nombre} eliminado"
 
     def insertar_constancia(
         self, uid: int, no_organismos: int, costo_unitario: float
