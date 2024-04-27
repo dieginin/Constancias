@@ -10,23 +10,18 @@ class Database:
 
     @property
     def clientes(self) -> list[Cliente]:
-        _clientes = []
-        for c in self._clientes.all():
-            _clientes.append(
-                Cliente(
-                    c["uid"], c["nombre"], c["estado"], c["municipio"], c["localidad"]
-                )
-            )
-        return _clientes
+        return [
+            Cliente(c["uid"], c["nombre"], c["estado"], c["municipio"], c["localidad"])
+            for c in self._clientes.all()
+        ]
 
     def obtener_cliente(self, nombre: str) -> Cliente:
-        if not self._clientes.contains(Query().nombre == nombre):
-            return Cliente(0, *4*["None"])
-
-        c = self._clientes.get(Query().nombre == nombre)
-        return Cliente(
-            c["uid"], c["nombre"], c["estado"], c["municipio"], c["localidad"] # type: ignore
-        )
+        cliente = self._clientes.get(Query().nombre == nombre)
+        if cliente:
+            return Cliente(
+                cliente["uid"], cliente["nombre"], cliente["estado"], cliente["municipio"], cliente["localidad"] # type: ignore
+            )
+        return Cliente(0, *4*["None"])
 
     def insertar_cliente(
         self, nombre: str, estado: str, municipio: str, localidad: str
@@ -55,14 +50,17 @@ class Database:
         if self._clientes.contains(Query().nombre == nombre):
             return f"{nombre} ya existe"
 
+        updates = {}
         if nombre:
-            self._clientes.update({"nombre": nombre}, doc_ids=[uid])
+            updates["nombre"] = nombre
         if estado:
-            self._clientes.update({"estado": estado}, doc_ids=[uid])
+            updates["estado"] = estado
         if municipio:
-            self._clientes.update({"municipio": municipio}, doc_ids=[uid])
+            updates["municipio"] = municipio
         if localidad:
-            self._clientes.update({"localidad": localidad}, doc_ids=[uid])
+            updates["localidad"] = localidad
+
+        self._clientes.update(updates, doc_ids=[uid])
         cliente = self._clientes.get(doc_id=uid)
         return f"{cliente["nombre"]} actualizado"  # type: ignore
 
